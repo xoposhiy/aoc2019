@@ -54,19 +54,15 @@ w = len(m[0])
 h = len(m)
 
 def count(x, y):
-    pos = (x, y)
-
-    def can_see(ax, ay):
-        dx = ax-x
-        dy = ay-y
-        steps = math.gcd(abs(dx), abs(dy))
-        return not any((1 for i in range(1, steps) if m[y + i*dy // steps][x + i*dx // steps] == '#'))
-
-    return len([1 
-        for ax in range(w) 
-        for ay in range(h) 
-        if (ax, ay) != (x, y) and m[ay][ax] == '#' and can_see(ax, ay)
-        ])
+    aa = set()
+    for ax in range(w):
+        for ay in range(h):
+            dx = ax-x
+            dy = ay-y
+            if (dx, dy) != (0, 0) and m[ay][ax] == '#':
+                d = math.gcd(abs(dx), abs(dy))
+                aa.add((dx//d, dy//d))
+    return len(aa)
 
 def angle_positive(x, y):
     a = math.atan2(x, -y)
@@ -90,15 +86,14 @@ def vaporize(m, station):
             res.append(dead)
             list.remove(dead)
             angle = dead[2]
-            #print("KILL ", dead)
+            #print("FIRE ", dead)
     return res
 
-
-#print("\n".join(m))
-
-candidates = [(x, y, count(x, y)) for x in range(0, w) for y in range(0, h) if m[y][x] == '#']
+candidates = [(x, y, count(x,y)) for x in range(0, w) for y in range(0, h) if m[y][x] == '#']
 station = max(candidates, key=lambda x:x[2])
 print(station)
+print("Part One: ", station[2])
 sequence = vaporize(m, station)
 #print ("\n".join(map(str, sequence[0:200])))
 print(sequence[199])
+print("Part Two: ", sequence[199][0]*100+sequence[199][1])
