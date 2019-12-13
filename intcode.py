@@ -31,6 +31,20 @@ def run_to_end(program, input, logging=False):
         else:
             raise Exception('{} {}'.format(vm.status, vm))
 
+def run_to_n_output(n, vm, inp, logging=False):
+    output = []
+    while len(output)<n:
+        vm = run(vm, inp, logging)
+        #print(len(output))
+        if vm.status == VmStatus.HAVE_OUTPUT:
+            output.append(vm.output)
+        elif vm.status == VmStatus.HALTED:
+            return (vm, output)
+        else:
+            raise Exception('{} {}'.format(vm.status, vm))
+    return (vm, output)
+
+
 def run(vm, input, logging=False, memlog=[]):
     def logmem(addr, op):
         memlog.append(MemLogRecord(op, addr))
